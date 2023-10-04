@@ -346,3 +346,28 @@ Usually, it's used to send data from a form. This data usually is transferred us
 Nodejs -> ":" (e.g. users/:id) means = the route will receive a dynamic parameter
 
 Since we are not using a framework, we'll need to create a regex to understand the dynamic parameter. Looking for all uppercase/lowercase letters that can repeat one or more times ("+") after :. We add "g" (as global) at the end for the case of having multiple dynamic parameters, such as /users/:userId/groups/:groupId. Without "g", the regex will stop at the first match
+
+`const routeParamsRegex = /:([a-zA-Z]+)/g` used to find all dynamic parameters.
+`const pathWithParams = path.replaceAll(routeParamsRegex, '([a-z0-9\-_]+)')` to validate the url with real parameters using the routeParamsRegex to validate the dynamic params. For example: /users/1 -> returns as valid. Although it validates the string, it doesn't return a named value, which it makes it difficult to identify which value is for what.
+
+For example,
+
+```js
+// If I try to get the route params for a route with multiple dynamic fields (e.g. /users/:id/groups/:groupId)
+const routeParams = req.url.match(route.path)
+
+// Returns
+// ['users/1/groups/1', '1', '1', index: 0, input: 'users/1/groups/1', groups: undefined]
+```
+
+With Regex is possible to create groups by using `?<>`. 
+
+We can also select a group within a specific position `?<$1>`
+
+```js
+const pathWithParams = path.replaceAll(routeParamsRegex, '(?<$1>[a-z0-9\-_]+)')
+
+// Returns
+// ['users/1', '1', index: 0, input: 'users/1', groups: { id: '1'}]
+// ['users/1/groupId/1', '1', '1', index: 0, input: 'users/1/groupId/1', groups: { id: '1', groupId: '1'}]
+```
