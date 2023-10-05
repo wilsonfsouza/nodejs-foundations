@@ -371,3 +371,17 @@ const pathWithParams = path.replaceAll(routeParamsRegex, '(?<$1>[a-z0-9\-_]+)')
 // ['users/1', '1', index: 0, input: 'users/1', groups: { id: '1'}]
 // ['users/1/groupId/1', '1', '1', index: 0, input: 'users/1/groupId/1', groups: { id: '1', groupId: '1'}]
 ```
+
+
+Improving Regex for Query Params
+
+```js
+ const pathRegex = new RegExp(`^${pathWithParams}(?<query>)?$`)
+ // route - /users?search=Diego
+ // console.log (routeParams.groups)
+ // {query: '?search=Diego'}
+```
+(?<query>) => creates a group for query params
+(?<query>)? => ? at the end indicates that this is OPTIONAL
+(?<query>)?$ => $ indicates it ends with
+(?<query>\\?(.*))?$ => \\? (scaped ? to indicate it starts with ?), `(.*)` (creates a group to select all characters)
